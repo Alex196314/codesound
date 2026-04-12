@@ -19,10 +19,12 @@
             padding: 20px;
             border-radius: 8px;
             margin-bottom: 20px;
+            border-left: 3px solid #00ff9d;
         }
         .post h2 a {
             color: #00ff9d;
             text-decoration: none;
+            font-size: 1.5rem;
         }
         .post h2 a:hover {
             text-decoration: underline;
@@ -30,33 +32,106 @@
         .post-meta {
             color: #8b9bb4;
             font-size: 0.9rem;
-            margin-bottom: 10px;
+            margin: 10px 0;
         }
+        .post-content {
+            margin-top: 15px;
+            line-height: 1.8;
+        }
+        .loading {
+            text-align: center;
+            color: #8b9bb4;
+            padding: 40px;
+        }
+        a.home-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #bd00ff;
+            text-decoration: none;
+        }
+        a.home-link:hover { text-decoration: underline; }
     </style>
 </head>
 <body>
+    <a href="/" class="home-link">← На главную</a>
     <h1>📝 Блог</h1>
-    <div id="posts-list">Загрузка постов...</div>
+    <div id="posts-list" class="loading">Загрузка постов...</div>
 
-    <script type="module">
-        // Простой скрипт для загрузки постов из папки posts/
-        // Примечание: для работы нужен доступ к GitHub API
-        
+    <script>
+        // ⚙️ НАСТРОЙКИ (замени на свои данные!)
+        const GITHUB_USER = 'Alex196314';       // Твой ник на GitHub
+        const GITHUB_REPO = 'codesound';        // Имя репозитория
+        const POSTS_FOLDER = 'posts';           // Папка с постами
+        const BRANCH = 'main';                  // Ветка (main или master)
+
         async function loadPosts() {
-            const postsContainer = document.getElementById('posts-list');
+            const container = document.getElementById('posts-list');
             
-            // Заглушка: покажем список файлов вручную
-            // В реальном проекте здесь будет запрос к GitHub API
-            postsContainer.innerHTML = `
-                <div class="post">
-                    <h2><a href="#">Тестовая страница</a></h2>
-                    <div class="post-meta">12 апреля 2024</div>
-                    <p>Это тестовый пост, созданный через Decap CMS.</p>
-                    <a href="#">Читать далее →</a>
-                </div>
-            `;
+            try {
+                // 1. Получаем список файлов в папке posts/
+                const response = await fetch(
+                    `https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/contents/${POSTS_FOLDER}?ref=${BRANCH}`
+                );
+                
+                if (!response.ok) throw new Error('Не удалось получить список постов');
+                
+                const files = await response.json();
+                const mdFiles = files.filter(f => f.name.endsWith('.md'));
+
+                if (mdFiles.length === 0) {
+                    container.innerHTML = '<p>Пока нет постов. Будь первым!</p>';
+                    return;
+                }
+
+                container.innerHTML = ''; // Очистить "Загрузка..."
+
+                // 2. Для каждого файла скачиваем содержимое
+                for (const file of mdFiles) {
+                    const contentResp = await fetch(file.download_url);
+                    const content = await contentResp.text();
+                    
+                    // 3. Простой парсинг frontmatter (заголовок, дата, описание)
+                    const match = content.match(/^---\s*\n([\s\S]*?)\n---\s*\n([\s\S]*)$/);
+                    let title = file.name.replace('.md', '');
+                    let date = '';
+                    let body = content;
+                    
+                    if (match) {
+                        const meta = match[1];
+                        body = match[2];
+                        const titleMatch = meta.match(/title:\s*["']?(.+?)["']?$/im);
+                        const dateMatch = meta.match(/date:\s*(.+?)$/im);
+                        if (titleMatch) title = titleMatch[1];
+                        if (dateMatch) date = new Date(dateMatch[1]).toLocaleDateString('ru-RU');
+                    }
+
+                    // 4. Простое преобразование Markdown → HTML (жирный, курсив, ссылки)
+                    let htmlBody = body
+                        .replace(/^### (.*$)/gim, '<h3>$1</h3>')
+                        .replace(/^## (.*$)/gim, '<h2>$1</h2>')
+                        .replace(/^# (.*$)/gim, '<h1>$1</h1>')
+                        .replace(/\*\*(.*?)\*\*/gim, '<strong>$1</strong>')
+                        .replace(/\*(.*?)\*/gim, '<em>$1</em>')
+                        .replace(/\[(.*?)\]\((.*?)\)/gim, '<a href="$2" target="_blank">$1</a>')
+                        .replace(/\n/gim, '<br>');
+
+                    // 5. Создаём карточку поста
+                    const postEl = document.createElement('article');
+                    postEl.className = 'post';
+                    postEl.innerHTML = `
+                        <h2><a href="${file.html_url}" target="_blank">${title}</a></h2>
+                        ${date ? `<div class="post-meta">📅 ${date}</div>` : ''}
+                        <div class="post-content">${htmlBody}</div>
+                    `;
+                    container.appendChild(postEl);
+                }
+            } catch (err) {
+                console.error(err);
+                container.innerHTML = `<p style="color:#ff6b6b">Ошибка загрузки: ${err.message}<br><small>Проверь настройки в скрипте (ник, репозиторий, ветку)</small></p>`;
+            }
         }
-        
+
+        // Запускаем загрузку при открытии страницы
         loadPosts();
     </script>
 </body>
