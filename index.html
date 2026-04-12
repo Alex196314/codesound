@@ -220,6 +220,13 @@
             font-family: var(--font-mono);
             color: var(--text-muted);
         }
+        /* Для картинок в проектах */
+.project-img img {
+    width: 100%;           /* На всю ширину блока */
+    height: 200px;         /* Фиксированная высота */
+    object-fit: cover;     /* Обрезать, чтобы заполнить */
+    border-radius: 8px;    /* Скруглённые углы */
+}
         .project-info { padding: 20px; }
         .tags { margin-top: 10px; display: flex; gap: 10px; font-size: 0.8rem; }
         .tag { padding: 4px 10px; background: rgba(255,255,255,0.1); border-radius: 20px; }
