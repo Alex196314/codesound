@@ -1,0 +1,15 @@
+backend:
+  name: git-gateway
+  branch: main  # Или master, если ветка называется так
+
+media_folder: "assets/images"
+public_folder: "/assets/images"
+
+collections:
+  - name: "blog"
+    label: "📝 Блог"
+    folder: "posts"
+    create: true
+    fields:
+      - {label: "Заголовок", name: "title", widget: "string"}
+      - {label: "Текст", name: "body", widget: "markdown"}
