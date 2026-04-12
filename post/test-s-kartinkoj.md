@@ -27,7 +27,7 @@ date: 2024-04-12
 2. Укажи путь: `/codesound/assets/images/tvoja-kartinka.jpg`
 
 Пример:
-
+![Описание](/codesound/assets/images/dress-russ2.jpg)
 ## Форматирование
 
 В Markdown можно использовать:
