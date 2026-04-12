@@ -26,8 +26,11 @@ date: 2024-04-12
 1. Загрузи картинку в папку `assets/images/` на GitHub
 2. Укажи путь: `/codesound/assets/images/tvoja-kartinka.jpg`
 
-Пример:
-/codesound/assets/images/dress-russ2.jpg
+## Моё изображение
+
+![Описание картинки](/codesound/assets/images/dress-russ2.jpg)
+
+Эта картинка загружена прямо в GitHub и будет работать всегда!
 ## Форматирование
 
 В Markdown можно использовать:
