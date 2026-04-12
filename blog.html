@@ -63,7 +63,7 @@
         const GITHUB_REPO = 'codesound';        // Имя репозитория
         const POSTS_FOLDER = 'post';           // Папка с постами
         const BRANCH = 'main';                  // Ветка (main или master)
-     const BASE_URL = '/codesound';  // ← ДОБАВЬ ЭТУ СТРОКУ!
+        const BASE_URL = '/codesound';  // ← ДОБАВЬ ЭТУ СТРОКУ!
 
         async function loadPosts() {
             const container = document.getElementById('posts-list');
@@ -121,7 +121,7 @@
                     const postEl = document.createElement('article');
                     postEl.className = 'post';
                     postEl.innerHTML = `
-                        <h2><a href="/post.html?slug=${file.name.replace('.md', '')}">${title}</a></h2>
+                        <h2><a href="${BASE_URL}/post.html?slug=${file.name.replace('.md', '')}">${title}</a></h2>
                         ${date ? `<div class="post-meta">📅 ${date}</div>` : ''}
                         <div class="post-content">${htmlBody}</div>
                     `;
