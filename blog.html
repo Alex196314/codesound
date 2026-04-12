@@ -53,7 +53,7 @@
     </style>
 </head>
 <body>
-    <a href="/" class="home-link">← На главную</a>
+    <a href="/codesound/">← На главную</a>
     <h1>📝 Блог</h1>
     <div id="posts-list" class="loading">Загрузка постов...</div>
 
@@ -63,6 +63,7 @@
         const GITHUB_REPO = 'codesound';        // Имя репозитория
         const POSTS_FOLDER = 'posts';           // Папка с постами
         const BRANCH = 'main';                  // Ветка (main или master)
+        const BASE_URL = '/codesound';          // Для GitHub Pages
 
         async function loadPosts() {
             const container = document.getElementById('posts-list');
