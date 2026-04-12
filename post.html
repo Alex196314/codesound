@@ -60,7 +60,7 @@
     </style>
 </head>
 <body>
-    <a href="/blog.html" class="back-link">← Назад к блогу</a>
+    <a href="/codesound/blog.html" class="back-link">← Назад к блогу</a>
     <div id="post-content" class="loading">Загрузка поста...</div>
 
     <script>
@@ -68,6 +68,7 @@
         const GITHUB_REPO = 'codesound';
         const POSTS_FOLDER = 'posts';
         const BRANCH = 'main';
+        const BASE_URL = '/codesound';
 
         async function loadPost() {
             const container = document.getElementById('post-content');
