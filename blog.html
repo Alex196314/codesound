@@ -119,7 +119,7 @@
                     const postEl = document.createElement('article');
                     postEl.className = 'post';
                     postEl.innerHTML = `
-                        <h2><a href="${file.html_url}" target="_blank">${title}</a></h2>
+                        <h2><a href="/post.html?slug=${file.name.replace('.md', '')}">${title}</a></h2>
                         ${date ? `<div class="post-meta">📅 ${date}</div>` : ''}
                         <div class="post-content">${htmlBody}</div>
                     `;
