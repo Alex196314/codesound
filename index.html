@@ -258,6 +258,70 @@
             header { padding: 20px; }
             nav { display: none; } /* Для простоты скрыл меню на мобильном */
         }
+        /* === ГАМБУРГЕР-КНОПКА === */
+.menu-toggle {
+    display: none;
+    flex-direction: column;
+    gap: 5px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 5px;
+    z-index: 101;
+}
+
+.menu-toggle span {
+    width: 25px;
+    height: 3px;
+    background: var(--accent-code);
+    border-radius: 3px;
+    transition: 0.3s;
+}
+
+/* === МОБИЛЬНОЕ МЕНЮ === */
+@media (max-width: 768px) {
+    header {
+        padding: 15px 20px;
+    }
+    
+    .menu-toggle {
+        display: flex; /* Показываем кнопку на мобильном */
+    }
+    
+    nav {
+        position: fixed;
+        top: 70px;
+        left: 0;
+        right: 0;
+        background: var(--card-bg);
+        padding: 20px;
+        border-bottom: 1px solid rgba(255,255,255,0.1);
+        transform: translateY(-150%);
+        transition: transform 0.3s ease;
+        z-index: 99;
+    }
+    
+    nav.active {
+        transform: translateY(0); /* Показываем меню */
+    }
+    
+    nav ul {
+        flex-direction: column;
+        gap: 15px;
+        text-align: center;
+    }
+    
+    /* Анимация гамбургера в крестик */
+    .menu-toggle.active span:nth-child(1) {
+        transform: rotate(45deg) translate(5px, 5px);
+    }
+    .menu-toggle.active span:nth-child(2) {
+        opacity: 0;
+    }
+    .menu-toggle.active span:nth-child(3) {
+        transform: rotate(-45deg) translate(5px, -5px);
+    }
+}
     </style>
 </head>
 <body>
@@ -269,18 +333,26 @@
         <div class="bar"></div><div class="bar"></div>
     </div>
 
-    <header>
-        <div class="logo">&lt;<span>Code</span> <span>Sound</span>/&gt;</div>
-        <nav>
-            <ul>
-                <li><a href="#about">Обо мне</a></li>
-                <li><a href="#services">Услуги</a></li>
-                <li><a href="#portfolio">Работы</a></li>
-                <li><a href="#contact">Контакты</a></li>
-                <li><a href="/codesound/blog.html">Блог</a></li>
-            </ul>
-        </nav>
-    </header>
+<header>
+    <div class="logo">&lt;<span>Code</span> <span>Sound</span>/&gt;</div>
+    
+    <!-- Кнопка гамбургер (видна только на мобильном) -->
+    <button class="menu-toggle" aria-label="Меню">
+        <span></span>
+        <span></span>
+        <span></span>
+    </button>
+    
+    <nav>
+        <ul>
+            <li><a href="#about">Обо мне</a></li>
+            <li><a href="#services">Услуги</a></li>
+            <li><a href="#portfolio">Работы</a></li>
+            <li><a href="#contact">Контакты</a></li>
+            <li><a href="/codesound/blog.html">Блог</a></li>
+        </ul>
+    </nav>
+</header>
 
     <section class="hero">
         <h1>Архитектура звука <br> и чистый код</h1>
@@ -434,6 +506,26 @@
       }
     });
   }
+</script>
+    <script>
+    // Мобильное меню: гамбургер
+    const menuToggle = document.querySelector('.menu-toggle');
+    const nav = document.querySelector('nav');
+    
+    if (menuToggle) {
+        menuToggle.addEventListener('click', () => {
+            menuToggle.classList.toggle('active');
+            nav.classList.toggle('active');
+        });
+        
+        // Закрывать меню при клике на ссылку
+        document.querySelectorAll('nav a').forEach(link => {
+            link.addEventListener('click', () => {
+                menuToggle.classList.remove('active');
+                nav.classList.remove('active');
+            });
+        });
+    }
 </script>
 </body>
 </html>
