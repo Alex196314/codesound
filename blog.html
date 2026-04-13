@@ -16,27 +16,50 @@
         }
         .post {
             background: #1a1d24;
-            padding: 20px;
+            padding: 30px;
             border-radius: 8px;
-            margin-bottom: 20px;
-            border-left: 3px solid #00ff9d;
+            margin-bottom: 30px;
+            border-left: 4px solid #00ff9d;
+            transition: transform 0.3s;
+        }
+        .post:hover {
+            transform: translateY(-3px);
+        }
+        .post h2 {
+            margin-bottom: 10px;
+            font-size: 1.8rem;
         }
         .post h2 a {
             color: #00ff9d;
             text-decoration: none;
-            font-size: 1.5rem;
+            transition: color 0.3s;
         }
         .post h2 a:hover {
-            text-decoration: underline;
+            color: #bd00ff;
         }
         .post-meta {
             color: #8b9bb4;
             font-size: 0.9rem;
-            margin: 10px 0;
+            margin-bottom: 15px;
         }
-        .post-content {
-            margin-top: 15px;
+        .post-excerpt {
             line-height: 1.8;
+            margin-bottom: 20px;
+            color: #e0e0e0;
+        }
+        .read-more {
+            display: inline-block;
+            padding: 10px 25px;
+            background: #00ff9d;
+            color: #0f1115;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+        .read-more:hover {
+            background: #bd00ff;
+            transform: translateX(5px);
         }
         .loading {
             text-align: center;
@@ -53,23 +76,22 @@
     </style>
 </head>
 <body>
-    <a href="/codesound/">← На главную</a>
+    <a href="/codesound/" class="home-link">← На главную</a>
     <h1>📝 Блог</h1>
     <div id="posts-list" class="loading">Загрузка постов...</div>
 
     <script>
-        // ⚙️ НАСТРОЙКИ (замени на свои данные!)
-        const GITHUB_USER = 'Alex196314';       // Твой ник на GitHub
-        const GITHUB_REPO = 'codesound';        // Имя репозитория
-        const POSTS_FOLDER = 'post';           // Папка с постами
-        const BRANCH = 'main';                  // Ветка (main или master)
-        const BASE_URL = '/codesound';  // ← ДОБАВЬ ЭТУ СТРОКУ!
+        // ⚙️ НАСТРОЙКИ
+        const GITHUB_USER = 'Alex196314';
+        const GITHUB_REPO = 'codesound';
+        const POSTS_FOLDER = 'post';
+        const BRANCH = 'main';
+        const BASE_URL = '/codesound';
 
         async function loadPosts() {
             const container = document.getElementById('posts-list');
             
             try {
-                // 1. Получаем список файлов в папке posts/
                 const response = await fetch(
                     `https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/contents/${POSTS_FOLDER}?ref=${BRANCH}`
                 );
@@ -84,14 +106,13 @@
                     return;
                 }
 
-                container.innerHTML = ''; // Очистить "Загрузка..."
+                container.innerHTML = '';
 
-                // 2. Для каждого файла скачиваем содержимое
                 for (const file of mdFiles) {
                     const contentResp = await fetch(file.download_url);
                     const content = await contentResp.text();
                     
-                    // 3. Простой парсинг frontmatter (заголовок, дата, описание)
+                    // Парсинг frontmatter
                     const match = content.match(/^---\s*\n([\s\S]*?)\n---\s*\n([\s\S]*)$/);
                     let title = file.name.replace('.md', '');
                     let date = '';
@@ -106,34 +127,35 @@
                         if (dateMatch) date = new Date(dateMatch[1]).toLocaleDateString('ru-RU');
                     }
 
-                    // 4. Простое преобразование Markdown → HTML (жирный, курсив, ссылки)
-                    let htmlBody = body
-                        .replace(/^### (.*$)/gim, '<h3>$1</h3>')
-                        .replace(/^## (.*$)/gim, '<h2>$1</h2>')
-                        .replace(/^# (.*$)/gim, '<h1>$1</h1>')
-                        .replace(/\*\*(.*?)\*\*/gim, '<strong>$1</strong>')
-                        .replace(/\*(.*?)\*/gim, '<em>$1</em>')
-                        .replace(/!\[(.*?)\]\((.*?)\)/gim, '<img src="$2" alt="$1">') 
-                        .replace(/\[(.*?)\]\((.*?)\)/gim, '<a href="$2" target="_blank">$1</a>')
-                        .replace(/\n/gim, '<br>');
+                    // Создаём краткое описание (первые 250 символов)
+                    const cleanText = body.replace(/[#*`\[\]!]/g, '').replace(/\n/g, ' ');
+                    const excerpt = cleanText.substring(0, 250) + (cleanText.length > 250 ? '...' : '');
 
-                    // 5. Создаём карточку поста
+                    // Преобразование Markdown для превью (базовое)
+                    const htmlExcerpt = excerpt
+                        .replace(/\*\*(.*?)\*\*/gim, '<strong>$1</strong>')
+                        .replace(/\*(.*?)\*/gim, '<em>$1</em>');
+
+                    // Ссылка на полный пост
+                    const postUrl = `${BASE_URL}/post.html?slug=${file.name.replace('.md', '')}`;
+
+                    // Создаём карточку
                     const postEl = document.createElement('article');
                     postEl.className = 'post';
                     postEl.innerHTML = `
-                        <h2><a href="${BASE_URL}/post.html?slug=${file.name.replace('.md', '')}">${title}</a></h2>
+                        <h2><a href="${postUrl}">${title}</a></h2>
                         ${date ? `<div class="post-meta">📅 ${date}</div>` : ''}
-                        <div class="post-content">${htmlBody}</div>
+                        <div class="post-excerpt">${htmlExcerpt}</div>
+                        <a href="${postUrl}" class="read-more">Читать далее →</a>
                     `;
                     container.appendChild(postEl);
                 }
             } catch (err) {
                 console.error(err);
-                container.innerHTML = `<p style="color:#ff6b6b">Ошибка загрузки: ${err.message}<br><small>Проверь настройки в скрипте (ник, репозиторий, ветку)</small></p>`;
+                container.innerHTML = `<p style="color:#ff6b6b">Ошибка загрузки: ${err.message}<br><small>Проверь настройки в скрипте</small></p>`;
             }
         }
 
-        // Запускаем загрузку при открытии страницы
         loadPosts();
     </script>
 </body>
