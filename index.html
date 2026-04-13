@@ -256,7 +256,7 @@
         @media (max-width: 768px) {
             .hero h1 { font-size: 2.5rem; }
             header { padding: 20px; }
-            nav { display: none; } /* Для простоты скрыл меню на мобильном */
+           
         }
         /* === ГАМБУРГЕР-КНОПКА === */
 .menu-toggle {
@@ -280,29 +280,35 @@
 
 /* === МОБИЛЬНОЕ МЕНЮ === */
 @media (max-width: 768px) {
-    header {
-        padding: 15px 20px;
-    }
+    .hero h1 { font-size: 2.5rem; }
+    header { padding: 15px 20px; }
     
+    /* Показываем гамбургер */
     .menu-toggle {
-        display: flex; /* Показываем кнопку на мобильном */
+        display: flex !important;
     }
     
+    /* Скрываем меню по умолчанию */
     nav {
         position: fixed;
-        top: 70px;
+        top: 60px;
         left: 0;
         right: 0;
         background: var(--card-bg);
         padding: 20px;
         border-bottom: 1px solid rgba(255,255,255,0.1);
-        transform: translateY(-150%);
-        transition: transform 0.3s ease;
+        opacity: 0;
+        visibility: hidden;
+        transform: translateY(-20px);
+        transition: all 0.3s ease;
         z-index: 99;
     }
     
+    /* Показываем меню когда активен класс .active */
     nav.active {
-        transform: translateY(0); /* Показываем меню */
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
     }
     
     nav ul {
